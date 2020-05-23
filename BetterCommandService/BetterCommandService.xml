@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BetterCommandService</name>
+    </assembly>
+    <members>
+        <member name="T:BetterCommandService.DiscordCommandClass">
+            <summary>
+            The Commmand class attribute
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommandClass.prefix">
+            <summary>
+            The prefix for all commands in this class.
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommandClass.OverwritesPrefix">
+            <summary>
+            If <see langword="true"/> then only the property prefix will work on child commands, if <see langword="false"/> then the assigned prefix AND the prefix on the command are valid. Default is <see langword="true"/>
+            </summary>
+        </member>
+        <member name="M:BetterCommandService.DiscordCommandClass.#ctor(System.Char)">
+            <summary>
+            Tells the command service that this class contains commands.
+            </summary>
+            <param name="prefix">Prefix for the whole class, look at <see cref="P:BetterCommandService.DiscordCommandClass.OverwritesPrefix"/> for more options.</param>
+        </member>
+        <member name="M:BetterCommandService.DiscordCommandClass.#ctor">
+            <summary>
+            Tells the command service that this class contains commands.
+            </summary>
+        </member>
+        <member name="T:BetterCommandService.DiscordCommand">
+            <summary>
+            Discord command class
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommand.RequiredPermission">
+            <summary>
+            If <see langword="true"/> then <see cref="P:BetterCommandService.Settings.HasPermissionMethod"/> will be called and checked if the user has permission to execute the command, this result will be in the <see cref="T:BetterCommandService.CommandModuleBase"/>
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommand.prefixes">
+            <summary>
+            The prefix for the command. This is optional, the command will work with the default prefix you passed or an overwrited one from the <see cref="T:BetterCommandService.DiscordCommandClass"/>
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommand.description">
+            <summary>
+            Description of this command
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommand.commandHelp">
+            <summary>
+            Command help message, use this to create a generic help message
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.DiscordCommand.BotCanExecute">
+            <summary>
+            If <see langword="true"/> then bots can execute the command, default is <see langword="false"/>
+            </summary>
+        </member>
+        <member name="M:BetterCommandService.DiscordCommand.#ctor(System.String)">
+            <summary>
+            Tells the service that this method is a command
+            </summary>
+            <param name="commandName">the name of the command</param>
+        </member>
+        <member name="M:BetterCommandService.DiscordCommand.#ctor(System.String,System.Char)">
+            <summary>
+            Tells the service that this method is a command
+            </summary>
+            <param name="commandName">the name of the command</param>
+            <param name="Prefix">A prefix to overwrite the default one</param>
+        </member>
+        <member name="M:BetterCommandService.DiscordCommand.#ctor(System.String,System.Char[])">
+            <summary>
+            Tells the service that this method is a command
+            </summary>
+            <param name="commandName">the name of the command</param>
+            <param name="Prefixes">The Prefix(es) of the command, if this is empty it will use the default prefix</param>
+        </member>
+        <member name="T:BetterCommandService.Settings">
+            <summary>
+            The settings for the Command Service
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.Settings.DefaultPrefix">
+            <summary>
+            The Default prefix for the command service
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.Settings.HasPermissionMethod">
+            <summary>
+            This method will be called and when a command is called and checkes if the user has permission to execute the command, this result will be in the <see cref="P:BetterCommandService.CommandModuleBase.HasExecutePermission"/> if you dont set this, the <see cref="P:BetterCommandService.CommandModuleBase.HasExecutePermission"/> will always be <see langword="true"/>
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.Settings.CustomGuildPermissionMethod">
+            <summary>
+            A Dictionary containing specific permission methods for guilds, The Key would be the Guilds ID, and the value would be a Method that takes <see cref="T:Discord.Commands.SocketCommandContext"/> and returns a <see cref="T:System.Boolean"/>. this will overwrite the <see cref="P:BetterCommandService.Settings.HasPermissionMethod"/> if the guilds permission method is added
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.Settings.DMCommands">
+            <summary>
+            Boolean indicating if commands can be accessable in Direct messages, default value is <see cref="!:false"/>
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.Settings.AllowCommandExecutionOnInvalidPermissions">
+            <summary>
+            If the user has invalid permissions to execute the command and this bool is <see langword="true"/> then the command will still execute with the <see cref="P:BetterCommandService.CommandModuleBase.HasExecutePermission"/> set to <see langword="false"/>. Default is <see langword="false"/>
+            </summary>
+        </member>
+        <member name="T:BetterCommandService.CommandStatus">
+            <summary>
+            Status of the command
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.Success">
+            <summary>
+            The command executed successfully
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.Error">
+            <summary>
+            There was an error with the execution, look at the exception in <see cref="!:CommandResult.Exception"/>
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.NotFound">
+            <summary>
+            Could not find a command, if this is a mistake check if you have the <see cref="T:BetterCommandService.DiscordCommand"/> attribute attached to the command
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.NotEnoughParams">
+            <summary>
+            The command was found but there was not enough parameters passed for the command to execute correctly
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.InvalidParams">
+            <summary>
+            The parameters were there but they were unable to be parsed to the correct type
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.InvalidPermissions">
+            <summary>
+            If the user has incorrect permissions to execute the command
+            </summary>
+        </member>
+        <member name="F:BetterCommandService.CommandStatus.Unknown">
+            <summary>
+            Somthing happend that shouldn't have, i dont know what to say here other than :/
+            </summary>
+        </member>
+        <member name="T:BetterCommandService.CustomCommandService">
+            <summary>
+            The base class of <see cref="T:BetterCommandService.CustomCommandService"/>
+            </summary>
+        </member>
+        <member name="M:BetterCommandService.CustomCommandService.#ctor(BetterCommandService.Settings)">
+            <summary>
+            Creates a new command service instance
+            </summary>
+            <param name="s">the <see cref="T:BetterCommandService.Settings"/> for the command service</param>
+        </member>
+        <member name="T:BetterCommandService.CustomCommandService.CommandResult">
+            <summary>
+            The command result object
+            </summary>
+        </member>
+        <member name="T:BetterCommandService.CustomCommandService.ICommandResult">
+            <summary>
+            The Command Result, this contains the <see cref="T:BetterCommandService.CommandStatus"/> enum and a <see cref="P:BetterCommandService.CustomCommandService.ICommandResult.Exception"/> object if there was an error.
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CustomCommandService.ICommandResult.IsSuccess">
+            <summary>
+            <see langword="true"/> the execution of the command is successful
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CustomCommandService.ICommandResult.Result">
+            <summary>
+            The status of the command
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CustomCommandService.ICommandResult.MultipleResults">
+            <summary>
+            a <see cref="T:System.Boolean"/> determining if there was multiple results, if true look in <see cref="P:BetterCommandService.CustomCommandService.ICommandResult.Results"/>
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CustomCommandService.ICommandResult.Results">
+            <summary>
+            The multi-Result Array
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CustomCommandService.ICommandResult.Exception">
+            <summary>
+            Exception if there was an error
+            </summary>
+        </member>
+        <member name="M:BetterCommandService.CustomCommandService.ExecuteAsync(Discord.Commands.SocketCommandContext)">
+            <summary>
+            This method will execute a command if there is one
+            </summary>
+            <param name="context">The current discord <see cref="T:Discord.Commands.ICommandContext"/></param>
+            <returns>The <see cref="T:BetterCommandService.CustomCommandService.ICommandResult"/> containing what the status of the execution is </returns>
+        </member>
+        <member name="T:BetterCommandService.CommandModuleBase">
+            <summary>
+            The Class to interface from.
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CommandModuleBase.HasExecutePermission">
+            <summary>
+            If the user has execute permission based on the <see cref="!:CustomCommandService.Settings.HasPermissionMethod"/>
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CommandModuleBase.Context">
+            <summary>
+            The Context of the current command
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CommandModuleBase.CommandHelps">
+            <summary>
+            Contains all the help messages. Key is the command name, Value is the help message
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CommandModuleBase.CommandDescriptions">
+            <summary>
+            Contains all the help messages. Key is the command name, Value is the Command Description
+            </summary>
+        </member>
+        <member name="P:BetterCommandService.CommandModuleBase.Commands">
+            <summary>
+            The superlist with all the commands
+            </summary>
+        </member>
+    </members>
+</doc>
