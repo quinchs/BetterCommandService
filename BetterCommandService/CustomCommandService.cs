@@ -173,6 +173,11 @@ namespace BetterCommandService
     {
         public List<char> UsedPrefixes { get; internal set; }
 
+        public bool ContainsUsedPrefix(string msg)
+        {
+            return UsedPrefixes.Any(x => msg.StartsWith(x));
+        }
+
         private List<Command> CommandList = new List<Command>();
         private class Command
         {
