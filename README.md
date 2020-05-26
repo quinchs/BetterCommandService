@@ -1,7 +1,7 @@
 # BetterCommandService
+
 ## A Custom command service for discord bots
 
----
 ### Why?
 
 The default command service with the [Discord.net Package](https://github.com/discord-net/Discord.Net) is limited on what you can do.
@@ -9,8 +9,18 @@ The default command service with the [Discord.net Package](https://github.com/di
 for example you have to permission check each method. this can be a bit tedious, with the custom command service you can specify methods that get executed to check the permissions for the commands.
 you can also use multi-prefix commands.
 
+## Installation
 
-### Usage
+### Package Manager
+Install-Package BetterCommandService -Version 1.0.0
+
+### .Net Command line
+dotnet add package BetterCommandService --version 1.0.0
+
+### Direct link
+[BetterCommandService](https://www.nuget.org/packages/BetterCommandService/)
+
+## Usage
 
 To create a `CommandService` instance
 
