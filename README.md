@@ -12,10 +12,10 @@ you can also use multi-prefix commands.
 ## Installation
 
 ### Package Manager
-Install-Package BetterCommandService -Version 1.0.0
+Install-Package BetterCommandService -Version 1.0.2
 
 ### .Net Command line
-dotnet add package BetterCommandService --version 1.0.0
+dotnet add package BetterCommandService --version 1.0.2
 
 ### Direct link
 [BetterCommandService](https://www.nuget.org/packages/BetterCommandService/)
