@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections;
@@ -117,11 +118,11 @@ namespace BetterCommandService
         /// <summary>
         /// This method will be called and when a command is called and checkes if the user has permission to execute the command, this result will be in the <see cref="CommandModuleBase.HasExecutePermission"/> if you dont set this, the <see cref="CommandModuleBase.HasExecutePermission"/> will always be <see langword="true"/>
         /// </summary>
-        public Func<SocketCommandContext, bool> HasPermissionMethod { get; set; }
+        public Func<ICommandContext, bool> HasPermissionMethod { get; set; }
         /// <summary>
         /// A Dictionary containing specific permission methods for guilds, The Key would be the Guilds ID, and the value would be a Method that takes <see cref="SocketCommandContext"/> and returns a <see cref="bool"/>. this will overwrite the <see cref="HasPermissionMethod"/> if the guilds permission method is added
         /// </summary>
-        public Dictionary<ulong, Func<SocketCommandContext, bool>> CustomGuildPermissionMethod { get; set; }
+        public Dictionary<ulong, Func<ICommandContext, bool>> CustomGuildPermissionMethod { get; set; }
         /// <summary>
         /// Boolean indicating if commands can be accessable in Direct messages, default value is <see cref="false"/>
         /// </summary>
@@ -131,40 +132,6 @@ namespace BetterCommandService
         /// If the user has invalid permissions to execute the command and this bool is <see langword="true"/> then the command will still execute with the <see cref="CommandModuleBase.HasExecutePermission"/> set to <see langword="false"/>. Default is <see langword="false"/>
         /// </summary>
         public bool AllowCommandExecutionOnInvalidPermissions { get; set; }
-    }
-    /// <summary>
-    /// Status of the command
-    /// </summary>
-    public enum CommandStatus
-    {
-        /// <summary>
-        /// The command executed successfully
-        /// </summary>
-        Success,
-        /// <summary>
-        /// There was an error with the execution, look at the exception in <see cref="CommandResult.Exception"/>
-        /// </summary>
-        Error,
-        /// <summary>
-        /// Could not find a command, if this is a mistake check if you have the <see cref="DiscordCommand"/> attribute attached to the command
-        /// </summary>
-        NotFound,
-        /// <summary>
-        /// The command was found but there was not enough parameters passed for the command to execute correctly
-        /// </summary>
-        NotEnoughParams,
-        /// <summary>
-        /// The parameters were there but they were unable to be parsed to the correct type
-        /// </summary>
-        InvalidParams,
-        /// <summary>
-        /// If the user has incorrect permissions to execute the command
-        /// </summary>
-        InvalidPermissions,
-        /// <summary>
-        /// Somthing happend that shouldn't have, i dont know what to say here other than :/
-        /// </summary>
-        Unknown
     }
     /// <summary>
     /// The base class of <see cref="CustomCommandService"/>
@@ -210,9 +177,9 @@ namespace BetterCommandService
         {
             currentSettings = s;
             if (currentSettings.HasPermissionMethod == null)
-                currentSettings.HasPermissionMethod = (SocketCommandContext s) => { return true; };
+                currentSettings.HasPermissionMethod = (ICommandContext s) => { return true; };
             if (s.CustomGuildPermissionMethod == null)
-                currentSettings.CustomGuildPermissionMethod = new Dictionary<ulong, Func<SocketCommandContext, bool>>();
+                currentSettings.CustomGuildPermissionMethod = new Dictionary<ulong, Func<ICommandContext, bool>>();
             CommandModuleBase.CommandDescriptions = new Dictionary<string, string>();
             CommandModuleBase.CommandHelps = new Dictionary<string, string>();
             CommandModuleBase.Commands = new List<ICommands>();
@@ -224,6 +191,7 @@ namespace BetterCommandService
             }
             //add to base command list
             UsedPrefixes = new List<char>();
+            UsedPrefixes.Add(currentSettings.DefaultPrefix);
             foreach (var item in CommandMethods)
             {
                 var cmdat = item.Key.GetCustomAttribute<DiscordCommand>();
@@ -294,39 +262,13 @@ namespace BetterCommandService
             public ICommandResult[] Results { get; set; }
             public Exception Exception { get; set; }
         }
-        /// <summary>
-        /// The Command Result, this contains the <see cref="CommandStatus"/> enum and a <see cref="Exception"/> object if there was an error.
-        /// </summary>
-        public interface ICommandResult
-        {
-            /// <summary>
-            /// <see langword="true"/> the execution of the command is successful
-            /// </summary>
-            bool IsSuccess { get; }
-            /// <summary>
-            /// The status of the command
-            /// </summary>
-            CommandStatus Result { get; }
-            /// <summary>
-            /// a <see cref="bool"/> determining if there was multiple results, if true look in <see cref="Results"/>
-            /// </summary>
-            bool MultipleResults { get; }
-            /// <summary>
-            /// The multi-Result Array
-            /// </summary>
-            ICommandResult[] Results { get; }
-
-            /// <summary>
-            /// Exception if there was an error
-            /// </summary>
-            Exception Exception { get; }
-        }
+        
         /// <summary>
         /// This method will execute a command if there is one
         /// </summary>
         /// <param name="context">The current discord <see cref="ICommandContext"/></param>
         /// <returns>The <see cref="ICommandResult"/> containing what the status of the execution is </returns>
-        public async Task<ICommandResult> ExecuteAsync(SocketCommandContext context)
+        public async Task<ICommandResult> ExecuteAsync(ICommandContext context)
         {
             string[] param = context.Message.Content.Split(' ');
             param = param.TakeLast(param.Length - 1).ToArray();
@@ -407,7 +349,7 @@ namespace BetterCommandService
 
             return new CommandResult() { Results = results.ToArray(), MultipleResults = true, IsSuccess = false };
         }
-        private async Task<CommandResult> ExecuteCommand(Command cmd, SocketCommandContext context, string[] param)
+        private async Task<CommandResult> ExecuteCommand(Command cmd, ICommandContext context, string[] param)
         {
             if (!cmd.attribute.BotCanExecute && context.Message.Author.IsBot)
                 return new CommandResult() { Result = CommandStatus.InvalidPermissions };
@@ -582,51 +524,5 @@ namespace BetterCommandService
             else
                 return new CommandResult() { Result = CommandStatus.NotEnoughParams, IsSuccess = false };
         }
-        private struct Commands : ICommands
-        {
-            public string CommandName { get; set; }
-            public string CommandDescription { get; set; }
-            public string CommandHelpMessage { get; set; }
-            public bool RequiresPermission { get; set; }
-            public char[] Prefixes { get; set; }
-        }
-    }
-
-    /// <summary>
-    /// The Class to interface from.
-    /// </summary>
-    public class CommandModuleBase
-    {
-        /// <summary>
-        /// If the user has execute permission based on the <see cref="CustomCommandService.Settings.HasPermissionMethod"/>
-        /// </summary>
-        public static bool HasExecutePermission { get; set; }
-        /// <summary>
-        /// The Context of the current command
-        /// </summary>
-        public SocketCommandContext Context { get; internal set; }
-
-        /// <summary>
-        /// Contains all the help messages. Key is the command name, Value is the help message
-        /// </summary>
-        public static Dictionary<string, string> CommandHelps { get; internal set; }
-
-        /// <summary>
-        /// Contains all the help messages. Key is the command name, Value is the Command Description
-        /// </summary>
-        public static Dictionary<string, string> CommandDescriptions { get; internal set; }
-        /// <summary>
-        /// The superlist with all the commands
-        /// </summary>
-        public static List<ICommands> Commands { get; internal set; }
-
-    }
-    public interface ICommands
-    {
-        string CommandName { get; }
-        string CommandDescription { get; }
-        string CommandHelpMessage { get; }
-        char[] Prefixes { get; }
-        bool RequiresPermission { get; }
     }
 }

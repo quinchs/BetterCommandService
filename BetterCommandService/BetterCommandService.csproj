@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Quin lynch</Authors>
+    <Company>SwissDev</Company>
+    <Description>The better and more customizable command service for Discord bots</Description>
+    <Copyright />
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageIcon>Nuget.png</PackageIcon>
+    <RepositoryUrl>https://github.com/quinchs/BetterCommandService</RepositoryUrl>
+    <RepositoryType></RepositoryType>
+    <PackageTags>Discord, Bot, Discord Bot, Command, Command Service</PackageTags>
+    <NeutralLanguage>(None)</NeutralLanguage>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,6 +25,13 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net.Commands" Version="2.2.0" />
     <PackageReference Include="Discord.Net.WebSocket" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\Nuget.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
