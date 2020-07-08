@@ -11,5 +11,6 @@ namespace BetterCommandService
         public string CommandHelpMessage { get; set; }
         public bool RequiresPermission { get; set; }
         public char[] Prefixes { get; set; }
+        public string[] Aliases {get; set; }
     }
 }
